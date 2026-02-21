@@ -1,0 +1,12 @@
+{
+  "name": "fleetflow-frontend",
+  "version": "1.0.0",
+  "description": "FleetFlow Fleet Management Dashboard",
+  "scripts": {
+    "dev": "live-server --port=5500 --open=/src/pages/login.html",
+    "start": "npx serve . -p 5500 --cors"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}

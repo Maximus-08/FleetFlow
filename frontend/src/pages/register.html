@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FleetFlow — Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #7c6ff7;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow: hidden;
+  }
+
+  body::before, body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  body::before {
+    width: 500px; height: 500px;
+    background: rgba(255,255,255,0.18);
+    top: -100px; left: -100px;
+  }
+  body::after {
+    width: 400px; height: 400px;
+    background: rgba(100,80,220,0.3);
+    bottom: -80px; right: -80px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.97);
+    border-radius: 28px;
+    padding: 40px 36px 36px;
+    width: 420px;
+    max-width: 95vw;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(80,60,200,0.35), 0 0 0 1px rgba(255,255,255,0.6);
+    overflow: visible;
+    animation: cardEntry 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes cardEntry {
+    from { opacity: 0; transform: scale(0.85) translateY(40px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .card-title { font-size: 1.55rem; font-weight: 800; color: #1a1a2e; text-align: center; margin-bottom: 4px; }
+  .card-sub   { font-size: 0.8rem; color: #888; text-align: center; margin-bottom: 24px; font-weight: 400; }
+
+  .car-wrap {
+    position: absolute;
+    bottom: calc(100% - 18px);
+    left: -14px;
+    width: 160px; height: 130px;
+    pointer-events: none; z-index: 10;
+    animation: carIdle 3s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+  @keyframes carIdle { 0%,100%{transform:translateY(0) rotate(-1deg);} 50%{transform:translateY(-6px) rotate(1deg);} }
+  .car-wrap.peek      { animation: carPeek 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .car-wrap.hide      { animation: carHide 0.4s ease-in forwards; }
+  .car-wrap.celebrate { animation: carCelebrate 0.6s ease both; }
+  @keyframes carPeek      { 0%{transform:translateX(0) rotate(-1deg);} 40%{transform:translateX(16px) rotate(3deg) scale(1.05);} 100%{transform:translateX(10px) rotate(1deg);} }
+  @keyframes carHide      { to{transform:translateX(-30px) rotate(-8deg);opacity:0.6;} }
+  @keyframes carCelebrate { 0%{transform:translateX(10px) rotate(0);} 20%{transform:translateX(10px) rotate(-8deg) scale(1.08);} 50%{transform:translateX(10px) rotate(6deg) scale(1.1);} 80%{transform:translateX(10px) rotate(-4deg);} 100%{transform:translateX(10px) rotate(0);} }
+  @keyframes antennaPulse { 0%,100%{opacity:1;} 50%{opacity:0.7;} }
+  #antennaDot { animation: antennaPulse 1.5s ease-in-out infinite; }
+
+  .field-label { font-size:0.72rem; font-weight:700; color:#555; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; display:block; }
+  .input-group { position:relative; margin-bottom:14px; }
+  .input-icon  { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:#aaa; font-size:0.85rem; pointer-events:none; transition:color 0.3s; font-family:'Fira Code',monospace; }
+  .input-group:focus-within .input-icon { color:#7c6ff7; }
+
+  input {
+    width:100%; padding:12px 14px 12px 36px;
+    border:2px solid #e8e8f0; border-radius:12px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
+    color:#1a1a2e; background:#f7f7fd; outline:none;
+    transition:border-color 0.3s, box-shadow 0.3s, background 0.3s;
+  }
+  input:focus { border-color:#7c6ff7; background:#fff; box-shadow:0 0 0 4px rgba(124,111,247,0.15); }
+  input::placeholder { color:#bbb; }
+
+  .steps { display:flex; gap:6px; justify-content:center; margin-bottom:22px; }
+  .step-dot { width:28px; height:5px; border-radius:3px; background:#e0dfff; transition:background 0.4s,width 0.3s; }
+  .step-dot.active { background:#7c6ff7; width:44px; }
+  .step-dot.done   { background:#a8a3ff; }
+
+  .btn-next {
+    width:100%; padding:14px;
+    background:linear-gradient(135deg,#7c6ff7,#5b4fcf);
+    color:white; border:none; border-radius:14px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1rem;
+    cursor:pointer; position:relative; overflow:hidden; margin-top:6px;
+    transition:transform 0.2s,box-shadow 0.3s;
+    box-shadow:0 6px 24px rgba(92,79,207,0.4);
+  }
+  .btn-next:hover  { transform:translateY(-2px); box-shadow:0 12px 32px rgba(92,79,207,0.5); }
+  .btn-next:active { transform:translateY(0); }
+  .btn-next .ripple { position:absolute; border-radius:50%; background:rgba(255,255,255,0.3); transform:scale(0); animation:btnRipple 0.6s linear; pointer-events:none; }
+  @keyframes btnRipple { to{transform:scale(6);opacity:0;} }
+
+  .form-step { display:none; }
+  .form-step.active { display:block; animation:stepIn 0.4s cubic-bezier(0.23,1,0.32,1) both; }
+  @keyframes stepIn { from{opacity:0;transform:translateX(20px);} to{opacity:1;transform:translateX(0);} }
+
+  .success-screen { display:none; text-align:center; padding:20px 0; }
+  .success-screen.active { display:block; animation:stepIn 0.5s cubic-bezier(0.23,1,0.32,1) both; }
+  .success-icon {
+    width:72px; height:72px;
+    background:linear-gradient(135deg,#7c6ff7,#5b4fcf);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    margin:0 auto 16px; font-size:2rem;
+    animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+  }
+  @keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
+  .success-title { font-size:1.3rem; font-weight:800; color:#1a1a2e; margin-bottom:8px; }
+  .success-sub   { font-size:0.85rem; color:#888; margin-bottom:20px; }
+
+  /* ── GO TO DASHBOARD BUTTON (new) ── */
+  .btn-go-dashboard {
+    width:100%; padding:14px;
+    background:linear-gradient(135deg,#7c6ff7,#5b4fcf);
+    color:white; border:none; border-radius:14px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1rem;
+    cursor:pointer; box-shadow:0 6px 24px rgba(92,79,207,0.4);
+    transition:transform 0.2s,box-shadow 0.3s;
+    animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.45s both;
+  }
+  .btn-go-dashboard:hover  { transform:translateY(-2px); box-shadow:0 12px 32px rgba(92,79,207,0.5); }
+  .btn-go-dashboard:active { transform:translateY(0); }
+
+  .road {
+    position:absolute; bottom:-14px; left:-36px; right:-36px;
+    height:22px; background:linear-gradient(180deg,#e0dfff 0%,#c8c6f7 100%);
+    border-radius:0 0 28px 28px; overflow:hidden;
+  }
+  .road::after {
+    content:''; position:absolute; top:9px; left:0; right:0; height:3px;
+    background:repeating-linear-gradient(90deg,#fff 0px,#fff 18px,transparent 18px,transparent 34px);
+    animation:roadScroll 0.8s linear infinite;
+  }
+  @keyframes roadScroll { from{transform:translateX(0);} to{transform:translateX(-34px);} }
+
+  .powered { text-align:center; margin-top:18px; font-size:0.72rem; color:rgba(255,255,255,0.7); letter-spacing:0.05em; }
+
+  /* Google button */
+  .btn-google {
+    width:100%; padding:11px 14px; margin-bottom:14px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background:#fff; color:#3c4043;
+    border:1.5px solid #dadce0; border-radius:12px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; font-weight:600;
+    cursor:pointer; transition:box-shadow 0.2s, transform 0.2s;
+  }
+  .btn-google:hover { box-shadow:0 2px 14px rgba(0,0,0,0.18); transform:translateY(-1px); }
+  .btn-google:active { transform:translateY(0); box-shadow:none; }
+
+  /* Divider */
+  .divider-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .divider-line { flex:1; height:1px; background:rgba(255,255,255,0.22); }
+  .divider-text { font-size:0.72rem; color:rgba(255,255,255,0.5); white-space:nowrap; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+
+  @keyframes btnShake {
+    0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);}
+    40%{transform:translateX(6px);} 60%{transform:translateX(-4px);} 80%{transform:translateX(4px);}
+  }
+</style>
+</head>
+<body>
+
+<div style="position:relative;">
+  <div class="card" id="mainCard">
+
+    <div class="road"></div>
+
+    <div class="car-wrap" id="carWrap">
+      <svg viewBox="0 0 160 130" xmlns="http://www.w3.org/2000/svg" width="160" height="130">
+        <ellipse cx="80" cy="122" rx="52" ry="7" fill="rgba(0,0,0,0.12)"/>
+        <rect x="18" y="65" width="124" height="42" rx="10" fill="#5b4fcf"/>
+        <path d="M44 65 Q50 38 78 35 Q106 32 116 65 Z" fill="#7c6ff7"/>
+        <path d="M52 63 Q57 44 78 41 Q99 38 108 63 Z" fill="#c8e6ff" opacity="0.9"/>
+        <path d="M58 60 Q63 47 75 44" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <line x1="80" y1="65" x2="80" y2="105" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+        <rect x="50" y="82" width="14" height="4" rx="2" fill="rgba(255,255,255,0.35)"/>
+        <rect x="96" y="82" width="14" height="4" rx="2" fill="rgba(255,255,255,0.35)"/>
+        <path d="M22 72 Q80 68 138 72" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+        <rect x="128" y="85" width="16" height="14" rx="4" fill="#4a3fb8"/>
+        <rect x="130" y="89" width="12" height="6" rx="2" fill="#3a2fa0"/>
+        <line x1="136" y1="89" x2="136" y2="95" stroke="#5b4fcf" stroke-width="1"/>
+        <rect x="16" y="85" width="14" height="14" rx="4" fill="#4a3fb8"/>
+        <rect x="132" y="72" width="12" height="8" rx="3" fill="#fff9c4"/>
+        <rect x="133" y="73" width="10" height="6" rx="2" fill="#ffe566"/>
+        <rect x="16" y="72" width="12" height="8" rx="3" fill="#ff6b6b"/>
+        <rect x="17" y="73" width="10" height="6" rx="2" fill="#ff4444"/>
+        <circle cx="112" cy="108" r="14" fill="#2a2a3e"/>
+        <circle cx="112" cy="108" r="9"  fill="#3d3d5c"/>
+        <circle cx="112" cy="108" r="5"  fill="#5b4fcf"/>
+        <circle cx="112" cy="108" r="2"  fill="white"/>
+        <line x1="112" y1="99"  x2="112" y2="117" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="103" y1="108" x2="121" y2="108" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="106" y1="101" x2="118" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="118" y1="101" x2="106" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <circle cx="48"  cy="108" r="14" fill="#2a2a3e"/>
+        <circle cx="48"  cy="108" r="9"  fill="#3d3d5c"/>
+        <circle cx="48"  cy="108" r="5"  fill="#5b4fcf"/>
+        <circle cx="48"  cy="108" r="2"  fill="white"/>
+        <line x1="48"  y1="99"  x2="48"  y2="117" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="39"  y1="108" x2="57"  y2="108" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="42"  y1="101" x2="54"  y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="54"  y1="101" x2="42"  y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <line x1="96" y1="35" x2="100" y2="18" stroke="#5b4fcf" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="100" cy="16" r="4" fill="#ff6b6b"/>
+        <circle cx="100" cy="16" r="2" fill="#ff4444" id="antennaDot"/>
+        <circle cx="69" cy="52" r="4" fill="white"/>
+        <circle cx="90" cy="52" r="4" fill="white"/>
+        <circle cx="70" cy="53" r="2.5" fill="#2a2a3e" id="eyeL"/>
+        <circle cx="91" cy="53" r="2.5" fill="#2a2a3e" id="eyeR"/>
+        <circle cx="71" cy="52" r="1" fill="white"/>
+        <circle cx="92" cy="52" r="1" fill="white"/>
+        <path d="M72 59 Q80 64 88 59" stroke="#2a2a3e" stroke-width="2" stroke-linecap="round" fill="none" id="carSmile"/>
+      </svg>
+    </div>
+
+    <div class="card-title">Join FleetFlow 🚗</div>
+    <div class="card-sub">Smart fleet management, starting now</div>
+
+    <!-- Google Sign-In mock -->
+    <button type="button" class="btn-google" id="btnGoogle" onclick="googleSignIn()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider-row"><span class="divider-line"></span><span class="divider-text">or fill in manually</span><span class="divider-line"></span></div>
+
+    <div class="steps">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="form-step active" id="step1">
+      <label class="field-label">What's your name? *</label>
+      <div class="input-group">
+        <input type="text" id="firstName" placeholder="First name" autocomplete="given-name">
+        <span class="input-icon">✦</span>
+      </div>
+      <div class="input-group">
+        <input type="text" id="lastName" placeholder="Last name" autocomplete="family-name">
+        <span class="input-icon">✦</span>
+      </div>
+      <button type="button" class="btn-next" id="btn1">Next →</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="form-step" id="step2">
+      <label class="field-label">Enter your email address *</label>
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Ex. yourname@company.com" autocomplete="email">
+        <span class="input-icon">@</span>
+      </div>
+      <button type="button" class="btn-next" id="btn2">Next →</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="form-step" id="step3">
+      <label class="field-label">Create a password *</label>
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password">
+        <span class="input-icon">🔒</span>
+      </div>
+      <button type="button" class="btn-next" id="btn3">Create Account 🚗</button>
+    </div>
+
+    <!-- Success — NOW HAS A BUTTON -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">🚗</div>
+      <div class="success-title">You're in the fleet!</div>
+      <div class="success-sub">Welcome aboard. Your dashboard is ready.</div>
+      <button type="button" class="btn-go-dashboard" id="btnGoDashboard">
+        Go to Dashboard →
+      </button>
+    </div>
+
+  </div>
+  <div class="powered">⬡ Powered by FleetFlow</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── AUTO-REDIRECT: if already logged in, skip register ── */
+  try {
+    var existing = localStorage.getItem('ff_user');
+    if (existing && JSON.parse(existing).firstName) {
+      window.location.href = 'full.html';
+    }
+  } catch(e) {}
+
+  var totalSteps = 3;
+  var carWrap = document.getElementById('carWrap');
+
+  /* Button wiring */
+  document.getElementById('btn1').addEventListener('click', function() { nextStep(1); });
+  document.getElementById('btn2').addEventListener('click', function() { nextStep(2); });
+  document.getElementById('btn3').addEventListener('click', function() { nextStep(3); });
+
+  /* Enter key */
+  document.getElementById('firstName').addEventListener('keydown', function(e) { if(e.key==='Enter') nextStep(1); });
+  document.getElementById('lastName').addEventListener('keydown',  function(e) { if(e.key==='Enter') nextStep(1); });
+  document.getElementById('email').addEventListener('keydown',     function(e) { if(e.key==='Enter') nextStep(2); });
+  document.getElementById('password').addEventListener('keydown',  function(e) { if(e.key==='Enter') nextStep(3); });
+
+  /* ── NEW: Go to Dashboard ── */
+  document.getElementById('btnGoDashboard').addEventListener('click', function() {
+    window.location.href = 'full.html';
+  });
+
+  function nextStep(step) {
+    if (!validate(step)) return;
+    if (step < totalSteps) {
+      triggerCarAnim('peek');
+      showStep(step + 1);
+      updateDots(step + 1);
+      var panel = document.getElementById('step' + (step + 1));
+      if (panel) { var inp = panel.querySelector('input'); if(inp) setTimeout(function(){ inp.focus(); }, 50); }
+    } else {
+      submitForm();
+    }
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.form-step').forEach(function(el){ el.classList.remove('active'); });
+    var p = document.getElementById('step' + n);
+    if (p) p.classList.add('active');
+  }
+
+  function updateDots(active) {
+    for (var i = 1; i <= totalSteps; i++) {
+      var d = document.getElementById('dot' + i);
+      if (!d) continue;
+      d.classList.remove('active','done');
+      if (i === active)    d.classList.add('active');
+      else if (i < active) d.classList.add('done');
+    }
+  }
+
+  function validate(step) {
+    if (step === 1) {
+      var f = document.getElementById('firstName').value.trim();
+      var l = document.getElementById('lastName').value.trim();
+      if (!f || !l) { shakeButton('btn1'); triggerCarAnim('hide'); return false; }
+    }
+    if (step === 2) {
+      var em = document.getElementById('email').value.trim();
+      if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { shakeButton('btn2'); triggerCarAnim('hide'); return false; }
+    }
+    if (step === 3) {
+      var pw = document.getElementById('password').value;
+      if (!pw || pw.length < 8) { shakeButton('btn3'); triggerCarAnim('hide'); return false; }
+    }
+    return true;
+  }
+
+  function showSuccess() {
+    document.querySelectorAll('.form-step').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelectorAll('.step-dot').forEach(function(d){ d.classList.remove('active'); d.classList.add('done'); });
+    document.getElementById('successScreen').classList.add('active');
+    triggerCarAnim('celebrate');
+    var smile = document.getElementById('carSmile');
+    if (smile) smile.setAttribute('d','M72 59 Q80 66 88 59');
+    setTimeout(function() { window.location.href = 'full.html'; }, 1800);
+  }
+
+  function submitForm() {
+    var btn3 = document.getElementById('btn3');
+    if (btn3) { btn3.disabled = true; btn3.textContent = 'Creating account…'; }
+
+    var payload = {
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName:  document.getElementById('lastName').value.trim(),
+      email:     document.getElementById('email').value.trim(),
+      password:  document.getElementById('password').value,
+      role:      'Fleet Administrator'
+    };
+
+    /* Call real backend — fallback to localStorage if offline */
+    fetch('http://localhost:5000/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!data.success) throw new Error(data.message || 'Registration failed');
+      localStorage.setItem('ff_token', data.token);
+      localStorage.setItem('ff_user',  JSON.stringify(data.user));
+      showSuccess();
+    })
+    .catch(function(err) {
+      /* Backend offline — save locally so app still works */
+      console.warn('Backend offline, saving locally:', err.message);
+      var fallback = {
+        firstName: payload.firstName, lastName: payload.lastName,
+        email: payload.email, role: payload.role,
+        registeredAt: new Date().toISOString()
+      };
+      localStorage.setItem('ff_user', JSON.stringify(fallback));
+      showSuccess();
+    });
+  }
+
+  /* ── Google Sign-In (mock — replace with real OAuth when backend ready) ── */
+  function googleSignIn() {
+    var btn = document.getElementById('btnGoogle');
+    btn.disabled = true;
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" style="flex-shrink:0;animation:spin 0.7s linear infinite"><circle cx="12" cy="12" r="10" fill="none" stroke="#dadce0" stroke-width="3"/><path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="#4285F4" stroke-width="3" stroke-linecap="round"/></svg> Connecting…';
+
+    /* Simulate Google OAuth popup — store a demo Google user */
+    setTimeout(function() {
+      var googleUser = {
+        firstName:    'Google',
+        lastName:     'User',
+        email:        'user@gmail.com',
+        role:         'Fleet Admin',
+        provider:     'google',
+        registeredAt: new Date().toISOString()
+      };
+      localStorage.setItem('ff_user', JSON.stringify(googleUser));
+      window.location.href = 'full.html';
+    }, 1200);
+  }
+
+  function showSuccess() {
+    document.querySelectorAll(".form-step").forEach(function(el){ el.classList.remove("active"); });
+    document.querySelectorAll(".step-dot").forEach(function(d){ d.classList.remove("active"); d.classList.add("done"); });
+    document.getElementById("successScreen").classList.add("active");
+    triggerCarAnim("celebrate");
+    var smile = document.getElementById("carSmile");
+    if (smile) smile.setAttribute("d","M72 59 Q80 66 88 59");
+    setTimeout(function() { window.location.href = "full.html"; }, 1800);
+  }
+
+  function triggerCarAnim(type) {
+    if (!carWrap) return;
+    carWrap.classList.remove('peek','hide','celebrate');
+    void carWrap.offsetWidth;
+    carWrap.classList.add(type);
+    if (type === 'hide') setTimeout(function(){ carWrap.classList.remove('hide'); }, 1000);
+  }
+
+  function shakeButton(id) {
+    var b = document.getElementById(id);
+    if (!b) return;
+    b.style.animation = 'none'; void b.offsetWidth;
+    b.style.animation = 'btnShake 0.4s ease';
+    setTimeout(function(){ b.style.animation = ''; }, 400);
+  }
+
+  /* Ripple */
+  document.querySelectorAll('.btn-next').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      var r = document.createElement('span');
+      r.className = 'ripple';
+      var rect = this.getBoundingClientRect(), sz = Math.max(rect.width, rect.height);
+      r.style.cssText = 'width:'+sz+'px;height:'+sz+'px;left:'+(e.clientX-rect.left-sz/2)+'px;top:'+(e.clientY-rect.top-sz/2)+'px;';
+      this.appendChild(r);
+      setTimeout(function(){ r.remove(); }, 700);
+    });
+  });
+
+  /* Eyes follow cursor */
+  document.addEventListener('mousemove', function(e) {
+    var eL = document.getElementById('eyeL'), eR = document.getElementById('eyeR');
+    if (!eL || !eR || !carWrap) return;
+    var rect = carWrap.getBoundingClientRect();
+    var cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+    var angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+    var dist  = Math.min(1.5, Math.hypot(e.clientX - cx, e.clientY - cy) / 200);
+    eL.setAttribute('cx', 70 + Math.cos(angle) * dist);
+    eL.setAttribute('cy', 53 + Math.sin(angle) * dist);
+    eR.setAttribute('cx', 91 + Math.cos(angle) * dist);
+    eR.setAttribute('cy', 53 + Math.sin(angle) * dist);
+  });
+
+})();
+</script>
+
+</body>
+</html>

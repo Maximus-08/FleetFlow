@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=src/pages/login.html">
+  <meta http-equiv="refresh" content="0; url=src/pages/register.html">
   <title>FleetFlow</title>
 </head>
+
 <body>
   <script>
     const token = localStorage.getItem('ff_token');
     window.location.href = token
       ? 'src/pages/full.html'
-      : 'src/pages/login.html';
+      : 'src/pages/register.html';
   </script>
 </body>
+
 </html>
